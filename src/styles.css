@@ -1,0 +1,79 @@
+.sta { 
+  --ink:#1F3A34; --ink-soft:#365C52; --paper:#F7F2E7; --paper-2:#EFE7D4;
+  --card:#FFFDF8; --mustard:#D9A441; --mustard-deep:#B9822A; --maroon:#8B3A3A;
+  --sage:#5E8B73; --amber:#C98A2C; --rule:#DCD2B8; --ink-faint:#8A9691;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--paper); color:var(--ink); min-height:100vh; width:100%;
+  box-sizing:border-box;
+}
+.sta *{ box-sizing:border-box; }
+.sta h1,.sta h2,.sta h3{ font-family:Georgia,"Iowan Old Style",serif; margin:0; color:var(--ink); }
+.sta-shell{ max-width:480px; margin:0 auto; padding:18px 16px 40px; }
+.sta-hero{ text-align:center; padding:36px 8px 20px; }
+.sta-hero h1{ font-size:26px; line-height:1.25; letter-spacing:.2px; }
+.sta-hero .underline{ width:64px; height:3px; background:var(--mustard); margin:14px auto 0; border-radius:2px; }
+.sta-hero p{ color:var(--ink-soft); font-size:14px; margin-top:10px; }
+.sta-card{ background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:18px; margin-bottom:14px; }
+.sta-label{ font-size:12.5px; color:var(--ink-soft); display:block; margin-bottom:6px; }
+.sta-input,.sta-select,.sta-textarea{
+  width:100%; padding:10px 12px; border:1px solid var(--rule); border-radius:7px;
+  background:var(--paper); color:var(--ink); font-size:15px; margin-bottom:12px; font-family:inherit;
+}
+.sta-textarea{ min-height:70px; resize:vertical; }
+.sta-btn{
+  width:100%; padding:12px 14px; border:none; border-radius:7px; background:var(--ink);
+  color:var(--paper); font-size:15px; font-weight:600; cursor:pointer;
+}
+.sta-btn:disabled{ opacity:.55; cursor:default; }
+.sta-btn.secondary{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
+.sta-btn.ghost{ background:transparent; color:var(--maroon); border:1px solid var(--maroon); }
+.sta-btn.small{ width:auto; padding:7px 12px; font-size:13px; }
+.sta-row{ display:flex; gap:10px; }
+.sta-row > *{ flex:1; }
+.sta-chip{ display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+.chip-exc{ background:#E4EFE7; color:var(--sage); }
+.chip-good{ background:#F1EAD3; color:var(--mustard-deep); }
+.chip-support{ background:#F3E3D3; color:var(--amber); }
+.chip-risk{ background:#F4E1E1; color:var(--maroon); }
+.sta-topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.sta-topbar .who{ font-size:13px; color:var(--ink-soft); }
+.sta-topbar .who b{ color:var(--ink); }
+.sta-logout{ background:none; border:none; color:var(--maroon); font-size:13px; cursor:pointer; text-decoration:underline; padding:0; }
+.sta-tabs{ display:flex; border-bottom:1px solid var(--rule); margin-bottom:16px; gap:2px; }
+.sta-tab{ flex:1; text-align:center; padding:10px 4px; font-size:12.5px; font-weight:600; color:var(--ink-faint);
+  background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; }
+.sta-tab.active{ color:var(--ink); border-bottom:2px solid var(--mustard); }
+.sta-section-title{ font-size:13px; text-transform:none; color:var(--mustard-deep); font-weight:700; margin:18px 0 8px; }
+.sta-section-title:first-child{ margin-top:0; }
+.sta-list{ margin:0; padding-left:18px; font-size:14.5px; line-height:1.6; color:var(--ink); }
+.sta-list li{ margin-bottom:5px; }
+.sta-divider{ border:none; border-top:1px solid var(--rule); margin:16px 0; }
+.sta-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+.sta-table th{ text-align:left; font-size:11.5px; color:var(--ink-soft); padding:6px 4px; border-bottom:1px solid var(--rule); }
+.sta-table td{ padding:8px 4px; border-bottom:1px solid var(--rule); vertical-align:middle; }
+.sta-mini-input{ width:52px; padding:5px 6px; border:1px solid var(--rule); border-radius:5px; font-size:13px; background:var(--paper); }
+.sta-empty{ text-align:center; color:var(--ink-faint); font-size:13.5px; padding:24px 10px; }
+.sta-status-btn{ font-size:18px; background:none; border:1px solid var(--rule); border-radius:6px; padding:4px 8px; cursor:pointer; }
+.sta-status-btn.on{ border-color:var(--ink); background:var(--paper-2); }
+.sta-stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.sta-stat{ background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:14px; }
+.sta-stat .num{ font-family:Georgia,serif; font-size:24px; color:var(--ink); }
+.sta-stat .lbl{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+.sta-note{ font-size:12.5px; color:var(--ink-soft); background:var(--paper-2); border-radius:7px; padding:10px 12px; margin-top:8px; }
+.sta-suggest{ font-size:13px; background:#F3E3D3; color:#6E4A1E; border-radius:7px; padding:10px 12px; margin-top:6px; border-left:3px solid var(--amber); }
+.sta-loading{ text-align:center; padding:28px 10px; color:var(--ink-soft); font-size:14px; }
+.sta-role-pick{ display:flex; gap:8px; margin-bottom:16px; }
+.sta-role-pick button{ flex:1; padding:12px 4px; border-radius:9px; border:1px solid var(--rule); background:var(--card); cursor:pointer; font-size:12.5px; font-weight:600; color:var(--ink-soft); }
+.sta-role-pick button.active{ border-color:var(--ink); color:var(--ink); background:var(--paper-2); }
+.sta-linkbtn{ background:none; border:none; color:var(--ink-soft); font-size:13px; text-decoration:underline; cursor:pointer; padding:0; }
+.sta-plan{ background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:14px 16px; margin-bottom:10px; }
+.sta-plan .head{ display:flex; justify-content:space-between; align-items:baseline; }
+.sta-plan .head b{ font-size:15px; }
+.sta-plan .head span{ font-size:12.5px; color:var(--mustard-deep); font-weight:600; }
+.sta-plan ul{ margin:8px 0 0; padding-left:18px; font-size:13px; color:var(--ink-soft); line-height:1.6; }
+.sta-demo-btn{ width:100%; padding:10px; border:1px dashed var(--mustard-deep); border-radius:7px; background:var(--paper-2); color:var(--mustard-deep); font-size:13.5px; font-weight:600; cursor:pointer; margin-bottom:12px; }
+.sta-authtabs{ display:flex; gap:8px; margin-bottom:16px; }
+.sta-authtabs button{ flex:1; padding:10px; border-radius:7px; border:1px solid var(--rule); background:var(--card); font-size:13.5px; font-weight:600; color:var(--ink-soft); cursor:pointer; }
+.sta-authtabs button.active{ border-color:var(--ink); color:var(--ink); background:var(--paper-2); }
+.sta-schoolid{ font-family:monospace; font-size:12.5px; background:var(--paper-2); padding:8px 10px; border-radius:6px; word-break:break-all; user-select:all; }
+.sta-error{ font-size:13px; color:var(--maroon); background:#F4E1E1; border-radius:7px; padding:10px 12px; margin-top:8px; }
