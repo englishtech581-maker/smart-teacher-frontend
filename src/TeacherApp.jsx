@@ -104,6 +104,7 @@ function ClassPicker({ classes, loaded, onOpen, onCreated }) {
   );
 }
 
+/* ---------- Planner ---------- */
 function PlannerTab({ klass, onUpdated }) {
   const [chapter, setChapter] = useState(klass.chapter || "");
   const [topic, setTopic] = useState(klass.topic || "");
@@ -172,13 +173,14 @@ function LessonGuideView({ guide, rtl }) {
   );
 }
 
+/* ---------- Students / Performance ---------- */
 function StudentsTab({ klass }) {
   const [students, setStudents] = useState([]);
-  const [latest, setLatest] = useState({});
-  const [monthly, setMonthly] = useState({});
+  const [latest, setLatest] = useState({}); // studentId -> performance row
+  const [monthly, setMonthly] = useState({}); // studentId -> {present, late, total}
   const [loaded, setLoaded] = useState(false);
-  const [form, setForm] = useState({ name: "", parentEmail: "" });
-  const [drafts, setDrafts] = useState({});
+  const [form, setForm] = useState({ name: "", parentEmail: "", parentPhone: "" });
+  const [drafts, setDrafts] = useState({}); // studentId -> {quiz, quizMax, homework}
   const [insights, setInsights] = useState({});
 
   async function refresh() {
@@ -200,8 +202,12 @@ function StudentsTab({ klass }) {
 
   async function addStudent() {
     if (!form.name.trim()) return;
-    await api.addStudent(klass.id, { name: form.name.trim(), parentEmail: form.parentEmail.trim() || undefined });
-    setForm({ name: "", parentEmail: "" });
+    await api.addStudent(klass.id, {
+      name: form.name.trim(),
+      parentEmail: form.parentEmail.trim() || undefined,
+      parentPhone: form.parentPhone.trim() || undefined,
+    });
+    setForm({ name: "", parentEmail: "", parentPhone: "" });
     refresh();
   }
   async function removeStudent(id) {
@@ -213,6 +219,8 @@ function StudentsTab({ klass }) {
       quiz: latest[s.id]?.quiz_score ?? "",
       quizMax: latest[s.id]?.quiz_max ?? "10",
       homework: latest[s.id]?.homework_status || "Average",
+      conduct: latest[s.id]?.conduct_status || "Good",
+      conductNotes: latest[s.id]?.conduct_notes || "",
     };
   }
   async function savePerformance(s) {
@@ -223,6 +231,8 @@ function StudentsTab({ klass }) {
       quizMax: Number(d.quizMax) || 10,
       homeworkStatus: d.homework,
       topic: klass.topic,
+      conductStatus: d.conduct,
+      conductNotes: d.conductNotes || undefined,
     });
     setDrafts((prev) => { const n = { ...prev }; delete n[s.id]; return n; });
     refresh();
@@ -244,6 +254,8 @@ function StudentsTab({ klass }) {
         <input className="sta-input" placeholder="Student name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         <span className="sta-label">Parent's email (optional — lets them log in and see reports)</span>
         <input className="sta-input" placeholder="parent@email.com" value={form.parentEmail} onChange={(e) => setForm({ ...form, parentEmail: e.target.value })} />
+        <span className="sta-label">Or parent's phone number (if no email)</span>
+        <input className="sta-input" placeholder="03001234567" value={form.parentPhone} onChange={(e) => setForm({ ...form, parentPhone: e.target.value })} />
         <button className="sta-btn" onClick={addStudent}>Add Student</button>
       </div>
 
@@ -278,6 +290,18 @@ function StudentsTab({ klass }) {
                 </select>
               </div>
             </div>
+            <span className="sta-label">Conduct / Ethics</span>
+            <select className="sta-select" value={d.conduct} onChange={(e) => setDrafts({ ...drafts, [s.id]: { ...d, conduct: e.target.value } })}>
+              <option>Excellent</option><option>Good</option><option>Needs Improvement</option><option>Concern</option>
+            </select>
+            {d.conduct === "Concern" && (
+              <input
+                className="sta-input"
+                placeholder="Brief note on the concern (optional)"
+                value={d.conductNotes}
+                onChange={(e) => setDrafts({ ...drafts, [s.id]: { ...d, conductNotes: e.target.value } })}
+              />
+            )}
             {isDirty && <button className="sta-btn small" style={{ marginTop: 8 }} onClick={() => savePerformance(s)}>Save score</button>}
             <div style={{ fontSize: 12.5, color: "var(--ink-soft)", marginTop: 8 }}>Attendance (this month): {m ? Math.round(attPct) : "—"}%</div>
             {suggestion && <div className="sta-suggest">💡 {suggestion}</div>}
@@ -306,6 +330,7 @@ function StudentsTab({ klass }) {
   );
 }
 
+/* ---------- Attendance ---------- */
 function AttendanceTab({ klass }) {
   const [students, setStudents] = useState([]);
   const [date, setDate] = useState(todayStr());
@@ -336,7 +361,7 @@ function AttendanceTab({ klass }) {
   useEffect(() => { if (loaded) { loadDay(date); loadMonthly(); } /* eslint-disable-next-line */ }, [date]);
 
   async function setStatus(studentId, status) {
-    setDayRecord((prev) => ({ ...prev, [studentId]: status }));
+    setDayRecord((prev) => ({ ...prev, [studentId]: status })); // optimistic
     await api.markAttendance(klass.id, { date, records: [{ studentId, status }] });
     loadMonthly();
   }
