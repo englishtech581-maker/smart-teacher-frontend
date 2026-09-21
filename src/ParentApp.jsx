@@ -54,6 +54,10 @@ export default function ParentApp({ user, onLogout }) {
   );
 }
 
+// The backend already computes the performance label server-side and includes
+// it inside latestPerformance-adjacent fields via the report endpoint; for the
+// list view we derive a lightweight label from quiz score alone so the chip
+// has something to show before the full report is requested.
 function performanceLabel(c) {
   const p = c.latestPerformance;
   if (!p || !p.quiz_max) return "Good";
@@ -99,6 +103,7 @@ function ChildReport({ child, onBack }) {
           <div className="sta-stat"><div className="num">{child.attendancePct === null ? "—" : `${child.attendancePct}%`}</div><div className="lbl">Attendance</div></div>
           <div className="sta-stat"><div className="num">{p ? p.homework_status : "—"}</div><div className="lbl">Homework</div></div>
           <div className="sta-stat"><div className="num">{performanceLabel(child)}</div><div className="lbl">Overall</div></div>
+          <div className="sta-stat"><div className="num">{p && p.conduct_status ? p.conduct_status : "—"}</div><div className="lbl">Conduct / Ethics</div></div>
         </div>
       </div>
 
