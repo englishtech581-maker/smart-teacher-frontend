@@ -27,8 +27,9 @@ export default function App() {
   );
 }
 
+/* ---------- Auth ---------- */
 function AuthScreen({ onAuthed }) {
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState("login"); // login | register
   const [role, setRole] = useState("teacher");
   const [form, setForm] = useState({ name: "", email: "", password: "", schoolName: "", schoolId: "" });
   const [loading, setLoading] = useState(false);
@@ -107,8 +108,15 @@ function AuthScreen({ onAuthed }) {
           </>
         )}
 
-        <span className="sta-label">Email</span>
-        <input type="email" className="sta-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+        <span className="sta-label">{mode === "login" || role === "parent" ? "Email or phone number" : "Email"}</span>
+        <input
+          type={mode === "login" || role === "parent" ? "text" : "email"}
+          className="sta-input"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          placeholder={mode === "register" && role === "parent" ? "e.g. 03001234567" : ""}
+          required
+        />
 
         <span className="sta-label">Password</span>
         <input type="password" className="sta-input" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
