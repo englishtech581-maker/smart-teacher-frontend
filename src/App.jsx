@@ -17,7 +17,7 @@ export default function App() {
 
   return (
     <div className="sta">
-      <div className="sta-shell">
+      <div className={"sta-shell" + (user && user.role === "admin" ? " wide" : "")}>
         {!user && <AuthScreen onAuthed={handleAuthed} />}
         {user && user.role === "teacher" && <TeacherApp user={user} onLogout={handleLogout} />}
         {user && user.role === "admin" && <AdminApp user={user} onLogout={handleLogout} />}

@@ -77,3 +77,14 @@
 .sta-authtabs button.active{ border-color:var(--ink); color:var(--ink); background:var(--paper-2); }
 .sta-schoolid{ font-family:monospace; font-size:12.5px; background:var(--paper-2); padding:8px 10px; border-radius:6px; word-break:break-all; user-select:all; }
 .sta-error{ font-size:13px; color:var(--maroon); background:#F4E1E1; border-radius:7px; padding:10px 12px; margin-top:8px; }
+.sta-shell.wide{ max-width:960px; }
+.sta-banner{ min-height:120px; border-radius:10px; margin-bottom:16px; padding:14px 16px; display:flex; flex-direction:column; justify-content:flex-end;
+  background:linear-gradient(120deg,#1F3A34,#3b6b5e) center/cover; color:#F7F2E7; }
+.sta-banner .name{ font-family:Georgia,serif; font-size:22px; font-weight:700; }
+.sta-banner .who{ font-size:13px; opacity:.9; display:flex; gap:10px; align-items:center; }
+.sta-banner .sta-logout{ color:#F7F2E7; }
+.sta-scroll{ overflow-x:auto; }
+.sta-grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+@media(max-width:640px){ .sta-grid2{ grid-template-columns:1fr; } }
+.sta-small{ font-size:12.5px; color:var(--ink-soft); }
+.sta-photo{ width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-bottom:12px; }
