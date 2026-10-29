@@ -30,7 +30,7 @@ export default function TeacherApp({ user, onLogout }) {
         <>
           <div className="sta-card" style={{ padding: "10px 14px", marginBottom: 12 }}>
             <div style={{ fontSize: 13, color: "var(--ink-soft)" }}>
-              {selected.subject} · Class {selected.grade}{selected.chapter ? ` · ${selected.chapter}` : ""}
+              {selected.subject} · Class {selected.grade}{selected.section_name ? `-${selected.section_name}` : ""}{selected.chapter ? ` · ${selected.chapter}` : ""}
             </div>
             <button className="sta-linkbtn" onClick={() => setSelected(null)}>Switch class</button>
           </div>
@@ -52,15 +52,26 @@ export default function TeacherApp({ user, onLogout }) {
 
 function ClassPicker({ classes, loaded, onOpen, onCreated }) {
   const [showForm, setShowForm] = useState(classes.length === 0);
-  const [form, setForm] = useState({ subject: "", grade: "", chapter: "", topic: "" });
+  const [form, setForm] = useState({ subject: "", grade: "", sectionId: "", chapter: "", topic: "" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [sections, setSections] = useState([]);
+
+  // Sections the school has set up (for example 7-A). Choosing one means this class sees that section's students.
+  useEffect(() => {
+    api.getSections().then(setSections).catch(() => setSections([]));
+  }, []);
+
+  function pickSection(id) {
+    const sec = sections.find((s) => s.id === id);
+    setForm({ ...form, sectionId: id, grade: sec ? sec.grade : form.grade });
+  }
 
   async function create() {
     setSaving(true);
     setError("");
     try {
-      const c = await api.createClass(form);
+      const c = await api.createClass({ ...form, sectionId: form.sectionId || undefined });
       onCreated(c);
     } catch (err) {
       setError(err.message || "Could not create class");
@@ -77,7 +88,7 @@ function ClassPicker({ classes, loaded, onOpen, onCreated }) {
           {classes.map((c) => (
             <div className="sta-card" key={c.id} style={{ cursor: "pointer" }} onClick={() => onOpen(c)}>
               <b>{c.subject}</b>
-              <div style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 4 }}>Class {c.grade}{c.chapter ? ` · ${c.chapter}` : ""}</div>
+              <div style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 4 }}>Class {c.grade}{c.section_name ? `-${c.section_name}` : ""}{c.chapter ? ` · ${c.chapter}` : ""}</div>
             </div>
           ))}
           <button className="sta-linkbtn" onClick={() => setShowForm(true)}>+ Create a new class</button>
@@ -87,6 +98,15 @@ function ClassPicker({ classes, loaded, onOpen, onCreated }) {
         <div className="sta-card">
           <span className="sta-label">Subject</span>
           <input className="sta-input" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder="e.g. Mathematics" />
+          {sections.length > 0 && (
+            <>
+              <span className="sta-label">Class and section (choose the one you teach)</span>
+              <select className="sta-select" value={form.sectionId} onChange={(e) => pickSection(e.target.value)}>
+                <option value="">Not listed / choose later</option>
+                {sections.map((s) => <option key={s.id} value={s.id}>{s.grade}-{s.name} ({s.students} students)</option>)}
+              </select>
+            </>
+          )}
           <span className="sta-label">Class / Grade</span>
           <input className="sta-input" value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} placeholder="e.g. 7" />
           <span className="sta-label">Chapter (optional)</span>
@@ -322,7 +342,7 @@ function StudentsTab({ klass }) {
                 )}
               </>
             )}
-            <button className="sta-linkbtn" style={{ marginTop: 10 }} onClick={() => removeStudent(s.id)}>Remove student</button>
+            {s.class_id === klass.id && <button className="sta-linkbtn" style={{ marginTop: 10 }} onClick={() => removeStudent(s.id)}>Remove student</button>}
           </div>
         );
       })}
