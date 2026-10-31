@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
 import AdminDashboard from "./AdminDashboard.jsx";
+import AdminStudents from "./AdminStudents.jsx";
 import AdminSections from "./AdminSections.jsx";
 import AdminSchool from "./AdminSchool.jsx";
 
 // The principal's area. More tabs are added here as the school features arrive.
 const TABS = [
   ["dash", "Dashboard"],
+  ["students", "Students"],
   ["classes", "Classes"],
   ["school", "School"],
 ];
@@ -42,6 +44,7 @@ export default function AdminApp({ user, onLogout }) {
       </div>
 
       {tab === "dash" && <AdminDashboard user={user} />}
+      {tab === "students" && <AdminStudents />}
       {tab === "classes" && <AdminSections user={user} />}
       {tab === "school" && <AdminSchool school={school} onSaved={setSchool} />}
     </>
