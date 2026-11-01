@@ -13,21 +13,45 @@ export const FIELDS = {
     { key: "parentEmail", label: "Parent email", re: /mail/i },
   ],
   staff: [
-    { key: "name", label: "Name", re: /name/i, required: true },
+    { key: "name", label: "Name", re: /name/i, avoid: /father|husband|spouse|guardian|school/i, required: true },
     { key: "role", label: "Role", re: /role|designation|post|position/i },
     { key: "department", label: "Department", re: /dep|subject/i },
     { key: "phone", label: "Phone", re: /phone|mobile|contact|cell|whatsapp/i },
     { key: "email", label: "Email", re: /mail/i },
-    { key: "joinedOn", label: "Joined on", re: /join|date|since|hire/i },
+    { key: "joinedOn", label: "Joined on", re: /join|since|hire|appoint|doj/i },
   ],
 };
+
+const pad = (n) => String(n).padStart(2, "0");
+const SSF = XLSX.SSF || (XLSX.default && XLSX.default.SSF); // the library offers it under either name
+
+// Text for one cell. Date cells are turned into 2017-04-01 straight from the stored date, so the day and
+// the month can never be swapped. Typed text (and CSV files) is left exactly as written.
+function cellText(cell) {
+  if (!cell) return "";
+  if (cell.t === "n" && cell.z && SSF && SSF.is_date(cell.z)) {
+    const d = SSF.parse_date_code(cell.v);
+    if (d) return `${d.y}-${pad(d.m)}-${pad(d.d)}`;
+  }
+  if (cell.w !== undefined) return String(cell.w);
+  return String(cell.v ?? "");
+}
 
 // Reads the first sheet. Many school files have a title above the headings,
 // so the heading row is the first row with at least two filled cells.
 export function readSheet(buf) {
-  const wb = XLSX.read(buf, { type: "array" });
+  const wb = XLSX.read(buf, { type: "array", raw: true, cellNF: true }); // raw: CSV values are kept as typed
   const ws = wb.Sheets[wb.SheetNames[0]];
-  const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: false });
+  const data = [];
+  if (ws && ws["!ref"]) {
+    const ref = XLSX.utils.decode_range(ws["!ref"]);
+    const lastRow = Math.min(ref.e.r, ref.s.r + 20000);
+    for (let r = ref.s.r; r <= lastRow; r++) {
+      const row = [];
+      for (let c = ref.s.c; c <= ref.e.c; c++) row.push(cellText(ws[XLSX.utils.encode_cell({ r, c })]));
+      data.push(row);
+    }
+  }
   const h = data.findIndex((r) => r.filter((c) => String(c).trim()).length >= 2);
   if (h < 0) return { headers: [], body: [] };
   const headers = data[h].map((c) => String(c).trim());

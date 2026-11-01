@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "./api";
 import AdminDashboard from "./AdminDashboard.jsx";
 import AdminStudents from "./AdminStudents.jsx";
+import AdminStaff from "./AdminStaff.jsx";
 import AdminSections from "./AdminSections.jsx";
 import AdminSchool from "./AdminSchool.jsx";
 
@@ -9,6 +10,7 @@ import AdminSchool from "./AdminSchool.jsx";
 const TABS = [
   ["dash", "Dashboard"],
   ["students", "Students"],
+  ["staff", "Staff"],
   ["classes", "Classes"],
   ["school", "School"],
 ];
@@ -45,6 +47,7 @@ export default function AdminApp({ user, onLogout }) {
 
       {tab === "dash" && <AdminDashboard user={user} />}
       {tab === "students" && <AdminStudents />}
+      {tab === "staff" && <AdminStaff />}
       {tab === "classes" && <AdminSections user={user} />}
       {tab === "school" && <AdminSchool school={school} onSaved={setSchool} />}
     </>
