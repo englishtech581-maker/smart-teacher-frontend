@@ -92,3 +92,57 @@ Object.assign(api, {
   importStudents: (rows) => request("/import/students", { method: "POST", body: { rows } }),
   importStaff: (rows) => request("/import/staff", { method: "POST", body: { rows } }),
 });
+
+// ---- exams, fees, staff, timetable, homework, books ----
+const qs = (o) => Object.entries(o).filter(([, v]) => v !== undefined && v !== null && v !== "").map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&");
+Object.assign(api, {
+  listExams: () => request("/exams"),
+  createExam: (p) => request("/exams", { method: "POST", body: p }),
+  deleteExam: (id) => request(`/exams/${id}`, { method: "DELETE" }),
+  examSheet: (id, sectionId, subject) => request(`/exams/${id}/sheet?${qs({ sectionId, subject })}`),
+  saveMarks: (id, p) => request(`/exams/${id}/marks`, { method: "PUT", body: p }),
+  reportCard: (studentId, year) => request(`/exams/report-card/${studentId}?${qs({ year })}`),
+  listActivities: (studentId) => request(`/exams/activities/${studentId}`),
+  addActivity: (p) => request("/exams/activities", { method: "POST", body: p }),
+  deleteActivity: (id) => request(`/exams/activities/${id}`, { method: "DELETE" }),
+
+  generateFees: (p) => request("/fees/generate", { method: "POST", body: p }),
+  feeLedger: (o) => request(`/fees/ledger?${qs(o)}`),
+  feeSummary: (month) => request(`/fees/summary?${qs({ month })}`),
+  payFee: (p) => request("/fees/payments", { method: "POST", body: p }),
+  deleteCharge: (id) => request(`/fees/charges/${id}`, { method: "DELETE" }),
+
+  staffAttendance: (date) => request(`/hr/attendance?${qs({ date })}`),
+  saveStaffAttendance: (p) => request("/hr/attendance", { method: "POST", body: p }),
+  staffAttendanceSummary: (month) => request(`/hr/attendance/summary?${qs({ month })}`),
+  leaveList: () => request("/hr/leave"),
+  addLeave: (p) => request("/hr/leave", { method: "POST", body: p }),
+  setLeaveStatus: (id, status) => request(`/hr/leave/${id}`, { method: "PATCH", body: { status } }),
+  myLeave: () => request("/hr/my-leave"),
+  requestLeave: (p) => request("/hr/my-leave", { method: "POST", body: p }),
+  setSalary: (staffId, base) => request(`/hr/salary/${staffId}`, { method: "PUT", body: { base } }),
+  generatePayroll: (month) => request("/hr/payroll/generate", { method: "POST", body: { month } }),
+  payroll: (month) => request(`/hr/payroll?${qs({ month })}`),
+  updatePayroll: (id, p) => request(`/hr/payroll/${id}`, { method: "PATCH", body: p }),
+  staffReviews: () => request("/hr/reviews"),
+  addReview: (p) => request("/hr/reviews", { method: "POST", body: p }),
+
+  getTimetable: (sectionId) => request(`/timetable?${qs({ sectionId })}`),
+  saveTimetable: (p) => request("/timetable", { method: "PUT", body: p }),
+  myTimetable: () => request("/timetable/mine"),
+
+  postHomework: (p) => request("/homework", { method: "POST", body: p }),
+  classHomework: (classId) => request(`/homework/class/${classId}`),
+  deleteHomework: (id) => request(`/homework/${id}`, { method: "DELETE" }),
+
+  listBooks: () => request("/books"),
+  addBook: (p) => request("/books", { method: "POST", body: p }),
+  addBookText: (id, text) => request(`/books/${id}/text`, { method: "POST", body: { text } }),
+  deleteBook: (id) => request(`/books/${id}`, { method: "DELETE" }),
+
+  childHomework: (id) => request(`/parent/child/${id}/homework`),
+  childFees: (id) => request(`/parent/child/${id}/fees`),
+  childTimetable: (id) => request(`/parent/child/${id}/timetable`),
+
+  lessonChat: (p) => request("/ai/lesson-chat", { method: "POST", body: p }),
+});

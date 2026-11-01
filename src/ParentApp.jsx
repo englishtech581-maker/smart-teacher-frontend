@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
 import { chipClass } from "./logic";
+import ChildExtras from "./ParentExtras.jsx";
 
 export default function ParentApp({ user, onLogout }) {
   const [children, setChildren] = useState(null);
@@ -49,7 +50,7 @@ export default function ParentApp({ user, onLogout }) {
         </>
       )}
 
-      {selected && <ChildReport child={selected} onBack={() => setSelected(null)} />}
+      {selected && <><ChildReport child={selected} onBack={() => setSelected(null)} /><ChildExtras child={selected} /></>}
     </>
   );
 }
@@ -103,7 +104,6 @@ function ChildReport({ child, onBack }) {
           <div className="sta-stat"><div className="num">{child.attendancePct === null ? "—" : `${child.attendancePct}%`}</div><div className="lbl">Attendance</div></div>
           <div className="sta-stat"><div className="num">{p ? p.homework_status : "—"}</div><div className="lbl">Homework</div></div>
           <div className="sta-stat"><div className="num">{performanceLabel(child)}</div><div className="lbl">Overall</div></div>
-          <div className="sta-stat"><div className="num">{p && p.conduct_status ? p.conduct_status : "—"}</div><div className="lbl">Conduct / Ethics</div></div>
         </div>
       </div>
 

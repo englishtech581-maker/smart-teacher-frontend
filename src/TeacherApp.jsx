@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { TeacherMarks, TeacherHomework, TeacherWeek, LessonChat } from "./TeacherExtras.jsx";
 import { api } from "./api";
 import { computePerformance, chipClass, suggestionFor, todayStr, monthKey } from "./logic";
 
@@ -39,11 +40,17 @@ export default function TeacherApp({ user, onLogout }) {
             <button className={`sta-tab ${tab === "planner" ? "active" : ""}`} onClick={() => setTab("planner")}>📘 Lesson Planner</button>
             <button className={`sta-tab ${tab === "students" ? "active" : ""}`} onClick={() => setTab("students")}>📊 Performance</button>
             <button className={`sta-tab ${tab === "attendance" ? "active" : ""}`} onClick={() => setTab("attendance")}>🗓️ Attendance</button>
+            <button className={`sta-tab ${tab === "marks" ? "active" : ""}`} onClick={() => setTab("marks")}>📝 Marks</button>
+            <button className={`sta-tab ${tab === "homework" ? "active" : ""}`} onClick={() => setTab("homework")}>📚 Homework</button>
+            <button className={`sta-tab ${tab === "week" ? "active" : ""}`} onClick={() => setTab("week")}>🕒 My week</button>
           </div>
 
           {tab === "planner" && <PlannerTab klass={selected} onUpdated={(patch) => setSelected({ ...selected, ...patch })} />}
           {tab === "students" && <StudentsTab klass={selected} />}
           {tab === "attendance" && <AttendanceTab klass={selected} />}
+          {tab === "marks" && <TeacherMarks klass={selected} />}
+          {tab === "homework" && <TeacherHomework klass={selected} />}
+          {tab === "week" && <TeacherWeek />}
         </>
       )}
     </>
@@ -132,6 +139,17 @@ function PlannerTab({ klass, onUpdated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [guide, setGuide] = useState(null);
+  const [books, setBooks] = useState([]);
+  const [bookId, setBookId] = useState("");
+  const [usedBook, setUsedBook] = useState("");
+  useEffect(() => {
+    api.listBooks().then((list) => {
+      setBooks(list);
+      // pick the school's book for this class and subject automatically when there is one
+      const m = list.find((b) => String(b.grade || "") === String(klass.grade) && (b.subject || "").toLowerCase() === (klass.subject || "").toLowerCase());
+      if (m) setBookId(m.id);
+    }).catch(() => {});
+  }, [klass.id]);
 
   async function handleGenerate() {
     if (!topic.trim()) return;
@@ -139,8 +157,9 @@ function PlannerTab({ klass, onUpdated }) {
     setError("");
     setGuide(null);
     try {
-      const result = await api.lessonGuide({ subject: klass.subject, klass: klass.grade, chapter, topic, language });
+      const result = await api.lessonGuide({ subject: klass.subject, klass: klass.grade, chapter, topic, language, bookId: bookId || undefined });
       setGuide(result);
+      setUsedBook(bookId);
       api.updateClass(klass.id, { chapter, topic }).then(() => onUpdated({ chapter, topic })).catch(() => {});
     } catch (err) {
       setError(err.message || "Could not generate the guide. Please try again.");
@@ -156,6 +175,15 @@ function PlannerTab({ klass, onUpdated }) {
         <input className="sta-input" value={chapter} onChange={(e) => setChapter(e.target.value)} placeholder="e.g. Algebra" />
         <span className="sta-label">Topic to teach today</span>
         <input className="sta-input" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g. Linear Equations" />
+        {books.length > 0 && (
+          <>
+            <span className="sta-label">Plan from the school's book</span>
+            <select className="sta-select" value={bookId} onChange={(e) => setBookId(e.target.value)}>
+              <option value="">No book, general plan</option>
+              {books.map((b) => <option key={b.id} value={b.id}>{b.title}{b.grade ? ` (Class ${b.grade})` : ""}</option>)}
+            </select>
+          </>
+        )}
         <span className="sta-label">Guide language</span>
         <div className="sta-row" style={{ marginBottom: 12 }}>
           <button className={`sta-btn small ${language === "en" ? "" : "secondary"}`} onClick={() => setLanguage("en")}>English</button>
@@ -168,6 +196,7 @@ function PlannerTab({ klass, onUpdated }) {
       </div>
       {loading && <div className="sta-loading">Building lesson objectives, activities and assessment…</div>}
       {guide && <LessonGuideView guide={guide} rtl={language === "ur"} />}
+      {guide && <LessonChat klass={klass} chapter={chapter} topic={topic} language={language} bookId={usedBook} guide={guide} />}
     </div>
   );
 }
