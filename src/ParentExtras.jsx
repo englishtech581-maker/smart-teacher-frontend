@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "./api";
 import { ReportCardView, money } from "./Academics.jsx";
 import { DAYS } from "./AdminTimetable.jsx";
+import { VoucherView } from "./Voucher.jsx";
 
 const MODES = [["results", "Results"], ["homework", "Homework"], ["fees", "Fees"], ["week", "Timetable"]];
 
@@ -49,16 +50,40 @@ function Homework({ id }) {
 
 function Fees({ id }) {
   const [d, error] = useData(api.childFees, id);
+  const [months, merr] = useData(api.childVouchers, id);
+  const [open, setOpen] = useState(null);
+  const [v, setV] = useState(null);
+  useEffect(() => { setV(null); if (open) api.childVoucher(id, open).then(setV).catch(() => {}); }, [open]);
   if (error) return <div className="sta-error">{error}</div>;
   if (!d) return <div className="sta-loading">Loading…</div>;
   if (d.rows.length === 0) return <div className="sta-empty">No fees have been charged yet.</div>;
   return (
-    <div className="sta-card">
-      <div style={{ fontSize: 15, marginBottom: 8 }}>{d.outstanding > 0 ? <>To pay: <b style={{ color: "var(--maroon)" }}>{money(d.outstanding)}</b></> : <b style={{ color: "var(--sage)" }}>All fees are paid. Thank you.</b>}</div>
-      <table className="sta-table"><thead><tr><th>Fee</th><th>Amount</th><th>Left</th></tr></thead>
-        <tbody>{d.rows.map((r, i) => <tr key={i}><td>{r.title}<div className="sta-small">{r.month}</div></td><td>{money(r.amount)}</td>
-          <td style={{ color: r.balance > 0 ? "var(--maroon)" : "var(--sage)", fontWeight: 600 }}>{r.balance > 0 ? money(r.balance) : "Paid"}</td></tr>)}</tbody></table>
-      <div className="sta-note">Fees are paid at the school office.</div>
+    <div>
+      <div className="sta-card sta-noprint">
+        <div style={{ fontSize: 15, marginBottom: 8 }}>{d.outstanding > 0 ? <>To pay: <b style={{ color: "var(--maroon)" }}>{money(d.outstanding)}</b></> : <b style={{ color: "var(--sage)" }}>All fees are paid. Thank you.</b>}</div>
+        <table className="sta-table"><thead><tr><th>Fee</th><th>Amount</th><th>Left</th></tr></thead>
+          <tbody>{d.rows.map((r, i) => <tr key={i}><td>{r.title}<div className="sta-small">{r.month}</div></td><td>{money(r.amount)}</td>
+            <td style={{ color: r.balance > 0 ? "var(--maroon)" : "var(--sage)", fontWeight: 600 }}>{r.balance > 0 ? money(r.balance) : "Paid"}</td></tr>)}</tbody></table>
+        <div className="sta-note">Fees are paid at the school office.</div>
+      </div>
+      {months && months.length > 0 && (
+        <div className="sta-card sta-noprint">
+          <div className="sta-section-title" style={{ marginTop: 0 }}>Fee vouchers</div>
+          {months.map((m) => (
+            <div key={m.month} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid var(--rule)" }}>
+              <div><b>{m.month}</b> <span className="sta-small">{m.balance > 0 ? `${money(m.balance)} to pay` : "paid"}{m.reminded && m.balance > 0 ? " · reminder sent" : ""}</span></div>
+              <button className="sta-btn small secondary" onClick={() => setOpen(open === m.month ? null : m.month)}>{open === m.month ? "Hide" : "Open voucher"}</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {open && !v && <div className="sta-loading">Loading…</div>}
+      {v && (
+        <div className="sta-printarea">
+          <VoucherView v={v} />
+          <button className="sta-btn secondary sta-noprint" onClick={() => window.print()}>Print this voucher</button>
+        </div>
+      )}
     </div>
   );
 }

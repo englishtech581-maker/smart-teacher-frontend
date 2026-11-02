@@ -146,3 +146,18 @@ Object.assign(api, {
 
   lessonChat: (p) => request("/ai/lesson-chat", { method: "POST", body: p }),
 });
+
+// ---- automatic fees ----
+Object.assign(api, {
+  autoSettings: () => request("/fees/auto/settings"),
+  saveAutoSettings: (p) => request("/fees/auto/settings", { method: "PUT", body: p }),
+  addFeePlan: (p) => request("/fees/auto/plans", { method: "POST", body: p }),
+  deleteFeePlan: (id) => request(`/fees/auto/plans/${id}`, { method: "DELETE" }),
+  runAutoFees: () => request("/fees/auto/run", { method: "POST" }),
+  feeNotices: (pending) => request(`/fees/auto/notices${pending ? "?pending=1" : ""}`),
+  markNotice: (id, waDone) => request(`/fees/auto/notices/${id}`, { method: "PATCH", body: { waDone } }),
+  voucher: (studentId, month) => request(`/fees/voucher?${qs({ studentId, month })}`),
+  vouchers: (month, sectionId) => request(`/fees/vouchers?${qs({ month, sectionId })}`),
+  childVouchers: (id) => request(`/parent/child/${id}/vouchers`),
+  childVoucher: (id, month) => request(`/parent/child/${id}/voucher?${qs({ month })}`),
+});

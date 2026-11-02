@@ -102,3 +102,8 @@
   .sta-shell{ max-width:none !important; padding:0 !important; }
   .sta-card{ border:none !important; }
 }
+
+.sta-voucher{ border:1px solid var(--rule); border-radius:8px; padding:12px 14px; margin:10px 0; background:var(--card); page-break-inside:avoid; break-inside:avoid; }
+.sta-voucher-copy{ padding:4px 0; }
+.sta-cut{ font-size:11px; color:var(--ink-faint); text-align:center; margin:6px 0; overflow:hidden; white-space:nowrap; }
+@media print{ .sta-voucher{ border:1px solid #999; margin:0 0 14px; } }

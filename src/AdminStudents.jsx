@@ -126,7 +126,7 @@ export default function AdminStudents() {
             <div>
               <span className="sta-label">Gender</span>
               <select className="sta-select" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
-                <option value="">Not given</option><option>Male</option><option>Female</option>
+                <option value="">Not given (school default)</option><option>Male</option><option>Female</option>
               </select>
             </div>
             <div><span className="sta-label">Guardian name</span><input className="sta-input" value={form.guardianName} onChange={(e) => setForm({ ...form, guardianName: e.target.value })} /></div>

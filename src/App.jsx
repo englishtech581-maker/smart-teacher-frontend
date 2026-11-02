@@ -31,7 +31,7 @@ export default function App() {
 function AuthScreen({ onAuthed }) {
   const [mode, setMode] = useState("login"); // login | register
   const [role, setRole] = useState("teacher");
-  const [form, setForm] = useState({ name: "", email: "", password: "", schoolName: "", schoolId: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", schoolName: "", genderType: "", schoolId: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [justRegisteredAdmin, setJustRegisteredAdmin] = useState(null);
@@ -46,7 +46,7 @@ function AuthScreen({ onAuthed }) {
         result = await api.login({ email: form.email, password: form.password });
       } else {
         const payload = { name: form.name, email: form.email, password: form.password, role };
-        if (role === "admin") payload.schoolName = form.schoolName;
+        if (role === "admin") { payload.schoolName = form.schoolName; if (form.genderType) payload.genderType = form.genderType; }
         else payload.schoolId = form.schoolId;
         result = await api.register(payload);
       }
@@ -125,6 +125,13 @@ function AuthScreen({ onAuthed }) {
           <>
             <span className="sta-label">School name</span>
             <input className="sta-input" value={form.schoolName} onChange={(e) => setForm({ ...form, schoolName: e.target.value })} required />
+            <span className="sta-label">Who studies at your school?</span>
+            <select className="sta-select" value={form.genderType} onChange={(e) => setForm({ ...form, genderType: e.target.value })}>
+              <option value="">Choose</option>
+              <option value="boys">Boys only</option>
+              <option value="girls">Girls only</option>
+              <option value="coed">Co-education (boys and girls)</option>
+            </select>
           </>
         )}
         {mode === "register" && role !== "admin" && (

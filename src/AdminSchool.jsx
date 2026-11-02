@@ -34,13 +34,13 @@ function shrink(file) {
 }
 
 export default function AdminSchool({ school, onSaved }) {
-  const [form, setForm] = useState({ name: "", schoolType: "", city: "", phone: "" });
+  const [form, setForm] = useState({ name: "", schoolType: "", genderType: "", city: "", phone: "" });
   const [photo, setPhoto] = useState(null); // a new photo chosen but not saved yet
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState({ ok: "", error: "" });
 
   useEffect(() => {
-    if (school) setForm({ name: school.name || "", schoolType: school.school_type || "", city: school.city || "", phone: school.phone || "" });
+    if (school) setForm({ name: school.name || "", schoolType: school.school_type || "", genderType: school.gender_type || "", city: school.city || "", phone: school.phone || "" });
   }, [school]);
 
   async function choosePhoto(e) {
@@ -58,7 +58,7 @@ export default function AdminSchool({ school, onSaved }) {
     setSaving(true);
     setMsg({ ok: "", error: "" });
     try {
-      const payload = { name: form.name.trim(), schoolType: form.schoolType, city: form.city.trim(), phone: form.phone.trim() };
+      const payload = { name: form.name.trim(), schoolType: form.schoolType, genderType: form.genderType || undefined, city: form.city.trim(), phone: form.phone.trim() };
       if (photo) payload.photo = photo;
       const saved = await api.updateSchool(payload);
       onSaved(saved);
@@ -92,6 +92,15 @@ export default function AdminSchool({ school, onSaved }) {
           <select className="sta-select" value={form.schoolType} onChange={(e) => setForm({ ...form, schoolType: e.target.value })}>
             <option value="">Choose</option>
             {TYPES.map((t) => <option key={t}>{t}</option>)}
+          </select>
+        </div>
+        <div>
+          <span className="sta-label">Who studies here</span>
+          <select className="sta-select" value={form.genderType} onChange={(e) => setForm({ ...form, genderType: e.target.value })}>
+            <option value="">Choose</option>
+            <option value="boys">Boys only</option>
+            <option value="girls">Girls only</option>
+            <option value="coed">Co-education (boys and girls)</option>
           </select>
         </div>
         <div>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
 import { money } from "./Academics.jsx";
+import AdminFeeAuto from "./AdminFeeAuto.jsx";
 
 const thisMonth = () => new Date().toISOString().slice(0, 7);
 
-export default function AdminFees() {
+function FeeLedger() {
   const [month, setMonth] = useState(thisMonth());
   const [sections, setSections] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -96,6 +97,19 @@ export default function AdminFees() {
             ))}</tbody></table></div>
         )}
       </div>
+    </div>
+  );
+}
+
+export default function AdminFees() {
+  const [mode, setMode] = useState("ledger");
+  return (
+    <div>
+      <div className="sta-tabs sta-noprint">
+        <button className={`sta-tab ${mode === "ledger" ? "active" : ""}`} onClick={() => setMode("ledger")}>Fees and payments</button>
+        <button className={`sta-tab ${mode === "auto" ? "active" : ""}`} onClick={() => setMode("auto")}>Automatic vouchers</button>
+      </div>
+      {mode === "ledger" ? <FeeLedger /> : <AdminFeeAuto />}
     </div>
   );
 }
