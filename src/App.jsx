@@ -3,6 +3,7 @@ import { api, getToken, getUser, setSession, clearSession } from "./api";
 import TeacherApp from "./TeacherApp.jsx";
 import AdminApp from "./AdminApp.jsx";
 import ParentApp from "./ParentApp.jsx";
+import { ForgotForm, ResetForm } from "./ResetPassword.jsx";
 
 export default function App() {
   const [user, setUser] = useState(getUser());
@@ -35,6 +36,8 @@ function AuthScreen({ onAuthed }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [justRegisteredAdmin, setJustRegisteredAdmin] = useState(null);
+  const [forgot, setForgot] = useState(false);
+  const [resetToken, setResetToken] = useState(() => new URLSearchParams(window.location.search).get("reset"));
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -61,6 +64,23 @@ function AuthScreen({ onAuthed }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (resetToken) {
+    return (
+      <>
+        <div className="sta-hero"><h1>Smart Teacher &amp;<br />Institute Assistant</h1><div className="underline" /></div>
+        <ResetForm token={resetToken} onDone={() => { window.history.replaceState({}, "", window.location.pathname); setResetToken(null); setMode("login"); }} />
+      </>
+    );
+  }
+  if (forgot) {
+    return (
+      <>
+        <div className="sta-hero"><h1>Smart Teacher &amp;<br />Institute Assistant</h1><div className="underline" /></div>
+        <ForgotForm onBack={() => setForgot(false)} />
+      </>
+    );
   }
 
   if (justRegisteredAdmin) {
@@ -145,6 +165,7 @@ function AuthScreen({ onAuthed }) {
           {loading ? "Please wait..." : mode === "login" ? "Log in" : "Create account"}
         </button>
         {error && <div className="sta-error">{error}</div>}
+        {mode === "login" && <div style={{ marginTop: 12, textAlign: "center" }}><button type="button" className="sta-linkbtn" onClick={() => setForgot(true)}>Forgot password?</button></div>}
       </form>
     </>
   );

@@ -107,3 +107,9 @@
 .sta-voucher-copy{ padding:4px 0; }
 .sta-cut{ font-size:11px; color:var(--ink-faint); text-align:center; margin:6px 0; overflow:hidden; white-space:nowrap; }
 @media print{ .sta-voucher{ border:1px solid #999; margin:0 0 14px; } }
+
+.sta-cal{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+.sta-cal-h{ font-size:11px; text-align:center; color:var(--ink-faint); padding:3px 0; }
+.sta-cal-d{ min-height:44px; border:1px solid var(--rule); border-radius:6px; padding:3px; font-size:12px; text-align:center; background:var(--paper); }
+.sta-cal-d.has{ background:var(--paper-2); border-color:var(--mustard); }
+@media print{ .sta-batch .sta-printarea{ page-break-after:always; break-after:page; } .sta-batch .sta-printarea:last-child{ page-break-after:auto; } }

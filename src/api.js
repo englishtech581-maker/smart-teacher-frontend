@@ -161,3 +161,21 @@ Object.assign(api, {
   childVouchers: (id) => request(`/parent/child/${id}/vouchers`),
   childVoucher: (id, month) => request(`/parent/child/${id}/voucher?${qs({ month })}`),
 });
+
+// ---- results, notices, calendar, passwords ----
+Object.assign(api, {
+  classResults: (examId, sectionId) => request(`/exams/results/class?${qs({ examId, sectionId })}`),
+  schoolResults: (examId) => request(`/exams/results/school?${qs({ examId })}`),
+  reportCards: (sectionId) => request(`/exams/report-cards?${qs({ sectionId })}`),
+  announcements: () => request("/board/announcements"),
+  postAnnouncement: (p) => request("/board/announcements", { method: "POST", body: p }),
+  pinAnnouncement: (id, pinned) => request(`/board/announcements/${id}`, { method: "PATCH", body: { pinned } }),
+  deleteAnnouncement: (id) => request(`/board/announcements/${id}`, { method: "DELETE" }),
+  calendar: (year) => request(`/board/calendar?${qs({ year })}`),
+  addEvent: (p) => request("/board/calendar", { method: "POST", body: p }),
+  deleteEvent: (id) => request(`/board/calendar/${id}`, { method: "DELETE" }),
+  forgotPassword: (email) => request("/auth/forgot", { method: "POST", body: { email }, auth: false }),
+  resetPassword: (token, password) => request("/auth/reset", { method: "POST", body: { token, password }, auth: false }),
+  listUsers: (q) => request(`/people/users?${qs({ q })}`),
+  resetUserPassword: (id) => request(`/people/users/${id}/reset-password`, { method: "POST" }),
+});

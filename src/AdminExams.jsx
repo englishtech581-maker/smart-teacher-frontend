@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import ResultsPanel from "./Results.jsx";
 import { MarksEntry, StudentPicker, ReportCardView, ActivitiesPanel } from "./Academics.jsx";
 
-const MODES = [["exams", "Exams"], ["marks", "Enter marks"], ["cards", "Report cards"], ["activities", "Co-curricular"]];
+const MODES = [["exams", "Exams"], ["marks", "Enter marks"], ["results", "Results"], ["cards", "Report cards"], ["activities", "Co-curricular"]];
 
 export default function AdminExams() {
   const [mode, setMode] = useState("exams");
@@ -13,6 +14,7 @@ export default function AdminExams() {
       <div className="sta-tabs sta-noprint">{MODES.map(([k, l]) => <button key={k} className={`sta-tab ${mode === k ? "active" : ""}`} onClick={() => setMode(k)}>{l}</button>)}</div>
       {mode === "exams" && <ExamList />}
       {mode === "marks" && (sections.length ? <MarksEntry sections={sections} /> : <div className="sta-empty">Create classes and sections first (Classes tab).</div>)}
+      {mode === "results" && (sections.length ? <ResultsPanel sections={sections} isAdmin /> : <div className="sta-empty">Create classes and sections first (Classes tab).</div>)}
       {mode === "cards" && <Cards />}
       {mode === "activities" && <Activities />}
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import SchoolBoard from "./Board.jsx";
 import { TeacherMarks, TeacherHomework, TeacherWeek, LessonChat } from "./TeacherExtras.jsx";
 import { api } from "./api";
 import { computePerformance, chipClass, suggestionFor, todayStr, monthKey } from "./logic";
@@ -8,6 +9,7 @@ export default function TeacherApp({ user, onLogout }) {
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState(null);
   const [tab, setTab] = useState("planner");
+  const [board, setBoard] = useState(false);
 
   useEffect(() => {
     api.listClasses().then((c) => { setClasses(c); setLoaded(true); }).catch(() => setLoaded(true));
@@ -20,8 +22,13 @@ export default function TeacherApp({ user, onLogout }) {
         <button className="sta-logout" onClick={onLogout}>Log out</button>
       </div>
 
+      {!selected && (
+        <button className="sta-btn secondary" style={{ marginBottom: 12 }} onClick={() => setBoard(!board)}>{board ? "Close school notices" : "📢 School notices and calendar"}</button>
+      )}
+      {!selected && board && <SchoolBoard canEdit={false} />}
+
       {!selected ? (
-        <ClassPicker
+        board ? null : <ClassPicker
           classes={classes}
           loaded={loaded}
           onOpen={setSelected}
@@ -43,6 +50,7 @@ export default function TeacherApp({ user, onLogout }) {
             <button className={`sta-tab ${tab === "marks" ? "active" : ""}`} onClick={() => setTab("marks")}>📝 Marks</button>
             <button className={`sta-tab ${tab === "homework" ? "active" : ""}`} onClick={() => setTab("homework")}>📚 Homework</button>
             <button className={`sta-tab ${tab === "week" ? "active" : ""}`} onClick={() => setTab("week")}>🕒 My week</button>
+            <button className={`sta-tab ${tab === "board" ? "active" : ""}`} onClick={() => setTab("board")}>📢 Notices</button>
           </div>
 
           {tab === "planner" && <PlannerTab klass={selected} onUpdated={(patch) => setSelected({ ...selected, ...patch })} />}
@@ -51,6 +59,7 @@ export default function TeacherApp({ user, onLogout }) {
           {tab === "marks" && <TeacherMarks klass={selected} />}
           {tab === "homework" && <TeacherHomework klass={selected} />}
           {tab === "week" && <TeacherWeek />}
+          {tab === "board" && <SchoolBoard canEdit={false} />}
         </>
       )}
     </>

@@ -34,13 +34,13 @@ function shrink(file) {
 }
 
 export default function AdminSchool({ school, onSaved }) {
-  const [form, setForm] = useState({ name: "", schoolType: "", genderType: "", city: "", phone: "" });
+  const [form, setForm] = useState({ name: "", schoolType: "", genderType: "", passMark: "40", city: "", phone: "" });
   const [photo, setPhoto] = useState(null); // a new photo chosen but not saved yet
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState({ ok: "", error: "" });
 
   useEffect(() => {
-    if (school) setForm({ name: school.name || "", schoolType: school.school_type || "", genderType: school.gender_type || "", city: school.city || "", phone: school.phone || "" });
+    if (school) setForm({ name: school.name || "", schoolType: school.school_type || "", genderType: school.gender_type || "", passMark: String(school.pass_mark || 40), city: school.city || "", phone: school.phone || "" });
   }, [school]);
 
   async function choosePhoto(e) {
@@ -58,7 +58,7 @@ export default function AdminSchool({ school, onSaved }) {
     setSaving(true);
     setMsg({ ok: "", error: "" });
     try {
-      const payload = { name: form.name.trim(), schoolType: form.schoolType, genderType: form.genderType || undefined, city: form.city.trim(), phone: form.phone.trim() };
+      const payload = { name: form.name.trim(), schoolType: form.schoolType, genderType: form.genderType || undefined, passMark: Number(form.passMark) || undefined, city: form.city.trim(), phone: form.phone.trim() };
       if (photo) payload.photo = photo;
       const saved = await api.updateSchool(payload);
       onSaved(saved);
@@ -102,6 +102,10 @@ export default function AdminSchool({ school, onSaved }) {
             <option value="girls">Girls only</option>
             <option value="coed">Co-education (boys and girls)</option>
           </select>
+        </div>
+        <div>
+          <span className="sta-label">Pass mark in each subject (%)</span>
+          <input className="sta-input" type="number" min="1" max="100" value={form.passMark} onChange={(e) => setForm({ ...form, passMark: e.target.value })} />
         </div>
         <div>
           <span className="sta-label">City</span>

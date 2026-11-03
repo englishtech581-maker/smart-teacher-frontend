@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { api } from "./api";
 import { chipClass } from "./logic";
 import ChildExtras from "./ParentExtras.jsx";
+import SchoolBoard from "./Board.jsx";
 
 export default function ParentApp({ user, onLogout }) {
   const [children, setChildren] = useState(null);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
+  const [board, setBoard] = useState(false);
 
   useEffect(() => {
     api.getChildren()
@@ -22,6 +24,11 @@ export default function ParentApp({ user, onLogout }) {
       </div>
 
       {!selected && (
+        <button className="sta-btn secondary" style={{ marginBottom: 12 }} onClick={() => setBoard(!board)}>{board ? "Back to my children" : "📢 School notices and calendar"}</button>
+      )}
+      {!selected && board && <SchoolBoard canEdit={false} />}
+
+      {!selected && !board && (
         <>
           {error && <div className="sta-error">{error}</div>}
           {children === null && !error && <div className="sta-loading">Loading…</div>}

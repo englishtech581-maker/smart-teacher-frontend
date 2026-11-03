@@ -161,7 +161,10 @@ export function ReportCardView({ card }) {
               {e.subjects.map((s) => <tr key={s.subject}><td>{s.subject}</td><td>{s.marks}</td><td>{s.total}</td><td>{s.pct}</td><td><b>{s.grade}</b></td></tr>)}
               <tr><td><b>Total</b></td><td><b>{e.got}</b></td><td><b>{e.max}</b></td><td><b>{e.pct}</b></td><td><b>{e.grade}</b></td></tr>
             </tbody></table></div>
-          {e.position && <div className="sta-small" style={{ marginTop: 6 }}>Position in class: <b>{e.position}</b> of {e.of}</div>}
+          <div className="sta-small" style={{ marginTop: 6 }}>
+            {e.position ? <>Position in class: <b>{e.position}</b> of {e.of} · </> : null}
+            Result: <b style={{ color: e.failedIn && e.failedIn.length ? "var(--maroon)" : "var(--sage)" }}>{e.failedIn && e.failedIn.length ? `Fail (${e.failedIn.join(", ")})` : "Pass"}</b>
+          </div>
         </div>
       ))}
       {card.activities.length > 0 && (

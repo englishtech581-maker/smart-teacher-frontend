@@ -10,6 +10,8 @@ import AdminFees from "./AdminFees.jsx";
 import AdminHR from "./AdminHR.jsx";
 import AdminTimetable from "./AdminTimetable.jsx";
 import BooksPanel from "./BooksPanel.jsx";
+import SchoolBoard from "./Board.jsx";
+import AdminAccounts from "./AdminAccounts.jsx";
 
 // The principal's area. More tabs are added here as the school features arrive.
 const TABS = [
@@ -22,6 +24,7 @@ const TABS = [
   ["hr", "Staff HR"],
   ["time", "Timetable"],
   ["books", "Books"],
+  ["board", "Notices & calendar"],
   ["school", "School"],
 ];
 
@@ -64,7 +67,8 @@ export default function AdminApp({ user, onLogout }) {
       {tab === "hr" && <AdminHR />}
       {tab === "time" && <AdminTimetable />}
       {tab === "books" && <BooksPanel userId={user.id} />}
-      {tab === "school" && <AdminSchool school={school} onSaved={setSchool} />}
+      {tab === "board" && <SchoolBoard canEdit />}
+      {tab === "school" && <><AdminSchool school={school} onSaved={setSchool} /><AdminAccounts /></>}
     </>
   );
 }

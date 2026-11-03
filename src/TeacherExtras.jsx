@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "./api";
 import { MarksEntry, ActivitiesPanel } from "./Academics.jsx";
 import { DAYS } from "./AdminTimetable.jsx";
+import ResultsPanel from "./Results.jsx";
 
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
@@ -21,9 +22,11 @@ export function TeacherMarks({ klass }) {
     <div>
       <div className="sta-row" style={{ marginBottom: 12 }}>
         <button className={`sta-btn small ${part === "marks" ? "" : "secondary"}`} onClick={() => setPart("marks")}>Exam marks</button>
+        <button className={`sta-btn small ${part === "res" ? "" : "secondary"}`} onClick={() => setPart("res")}>Class result</button>
         <button className={`sta-btn small ${part === "act" ? "" : "secondary"}`} onClick={() => setPart("act")}>Co-curricular</button>
       </div>
       {part === "marks" && <MarksEntry sections={sections} defaultSubject={klass.subject} fixedSection />}
+      {part === "res" && <ResultsPanel sections={sections} isAdmin={false} />}
       {part === "act" && (
         <>
           <div className="sta-card"><span className="sta-label">Student</span>
