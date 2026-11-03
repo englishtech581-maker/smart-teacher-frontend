@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 
 // "6, 7, 8" -> ["6","7","8"], "6-10" -> ["6","7","8","9","10"], "A-C" -> ["A","B","C"]
 function expand(text) {
@@ -135,6 +136,7 @@ export default function AdminSections({ user }) {
           </div>
         )}
       </div>
+      <UploadBox type="sections" onDone={load} title="Upload classes and class teachers from Excel" />
     </div>
   );
 }

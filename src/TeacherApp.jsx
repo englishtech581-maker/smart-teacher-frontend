@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import SchoolBoard from "./Board.jsx";
 import { TeacherMarks, TeacherHomework, TeacherWeek, LessonChat } from "./TeacherExtras.jsx";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 import { computePerformance, chipClass, suggestionFor, todayStr, monthKey } from "./logic";
 
 export default function TeacherApp({ user, onLogout }) {
@@ -488,6 +489,7 @@ function AttendanceTab({ klass }) {
           ))}
         </>
       )}
+      <UploadBox type="attendance" extra={{ classId: klass.id }} onDone={() => { loadDay(date); loadMonthly(); }} title="Upload attendance from Excel (a register with one column per date also works)" />
     </div>
   );
 }

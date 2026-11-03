@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 import { MarksEntry, ActivitiesPanel } from "./Academics.jsx";
 import { DAYS } from "./AdminTimetable.jsx";
 import ResultsPanel from "./Results.jsx";
@@ -32,6 +33,7 @@ export function TeacherMarks({ klass }) {
           <div className="sta-card"><span className="sta-label">Student</span>
             <select className="sta-select" value={sid} onChange={(e) => setSid(e.target.value)}><option value="">Choose…</option>{students.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
           {sid && <ActivitiesPanel studentId={sid} canDelete />}
+          <UploadBox type="activities" title="Upload co-curricular marks for the class from Excel" />
         </>
       )}
     </div>

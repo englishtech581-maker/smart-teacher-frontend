@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 
 export const money = (n) => "Rs " + Number(n || 0).toLocaleString("en-PK");
 const secName = (s) => `${s.grade}-${s.name}`;
@@ -95,6 +96,7 @@ export function MarksEntry({ sections, defaultSubject = "", fixedSection = false
       )}
       {msg.ok && <div className="sta-note" style={{ color: "var(--sage)" }}>{msg.ok}</div>}
       {msg.error && <div className="sta-error">{msg.error}</div>}
+      {examId && <UploadBox type="marks" extra={{ examId }} onDone={() => { if (rows) load(); }} title="Upload marks from Excel (all subjects at once)" />}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 
 const KINDS = { holiday: ["Holiday", "#8B3A3A"], exam: ["Exam", "#B9822A"], activity: ["Activity", "#5E8B73"], meeting: ["Meeting", "#365C52"], other: ["Other", "#8A9691"] };
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -63,6 +64,7 @@ function Notices({ canEdit }) {
           </div>
         </div>
       ))}
+      {canEdit && <UploadBox type="announcements" onDone={load} title="Upload notices from Excel" />}
     </div>
   );
 }
@@ -155,6 +157,7 @@ function CalendarView({ canEdit }) {
           <button className="sta-btn" disabled={!f.title.trim() || !f.startDate} onClick={add}>Add event</button>
         </div>
       )}
+      {canEdit && <UploadBox type="events" onDone={load} title="Upload the whole year calendar from Excel" />}
     </div>
   );
 }

@@ -91,6 +91,7 @@ Object.assign(api, {
   deleteStaff: (id) => request(`/people/staff/${id}`, { method: "DELETE" }),
   importStudents: (rows) => request("/import/students", { method: "POST", body: { rows } }),
   importStaff: (rows) => request("/import/staff", { method: "POST", body: { rows } }),
+  importRows: (endpoint, rows, extra) => request(endpoint, { method: "POST", body: { rows, ...(extra || {}) } }),
 });
 
 // ---- exams, fees, staff, timetable, homework, books ----

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 
 export const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -12,6 +13,7 @@ export default function AdminTimetable() {
   const [cells, setCells] = useState(null);
   const [msg, setMsg] = useState({ ok: "", error: "" });
   const [busy, setBusy] = useState(false);
+  const [ver, setVer] = useState(0);
 
   useEffect(() => {
     api.getSections().then((s) => { setSections(s); if (s[0]) setSectionId(s[0].id); }).catch(() => {});
@@ -25,7 +27,7 @@ export default function AdminTimetable() {
       rows.forEach((r) => { c[`${r.day}-${r.period}`] = { subject: r.subject, teacherId: r.teacher_id || "" }; });
       setCells(c);
     }).catch((e) => setMsg({ ok: "", error: e.message }));
-  }, [sectionId]);
+  }, [sectionId, ver]);
 
   const set = (key, patch) => setCells((c) => ({ ...c, [key]: { subject: "", teacherId: "", ...c[key], ...patch } }));
   async function save() {
@@ -61,6 +63,7 @@ export default function AdminTimetable() {
       )}
       {msg.ok && <div className="sta-note" style={{ color: "var(--sage)" }}>{msg.ok}</div>}
       {msg.error && <div className="sta-error">{msg.error}</div>}
+      <UploadBox type="timetable" onDone={() => setVer((v) => v + 1)} title="Upload the timetable of many classes from Excel" />
     </div>
   );
 }

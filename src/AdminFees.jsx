@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 import { money } from "./Academics.jsx";
 import AdminFeeAuto from "./AdminFeeAuto.jsx";
 
@@ -97,6 +98,8 @@ function FeeLedger() {
             ))}</tbody></table></div>
         )}
       </div>
+      <UploadBox type="feeCharges" onDone={load} title="Upload fees to charge (from Excel)" />
+      <UploadBox type="feePayments" onDone={load} title="Upload payments already received (from Excel)" />
     </div>
   );
 }

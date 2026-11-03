@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 import { money } from "./Academics.jsx";
 
 const MODES = [["att", "Attendance"], ["leave", "Leave"], ["pay", "Salary"], ["rev", "Performance"]];
@@ -64,6 +65,7 @@ function StaffAttendance() {
             <tbody>{sum.map((s) => <tr key={s.id}><td>{s.name}</td><td>{s.present}</td><td>{s.late}</td><td>{s.absent}</td><td>{s.leave}</td></tr>)}</tbody></table></div>
         </>
       )}
+      <UploadBox type="staffAttendance" onDone={load} title="Upload staff attendance from Excel" />
     </div>
   );
 }
@@ -157,6 +159,7 @@ function Salary() {
         )}
         {rows && rows.length === 0 && <div className="sta-empty">No salary sheet for {month} yet. Set each person's monthly salary above, then make the sheet.</div>}
       </div>
+      <UploadBox type="salary" onDone={loadStaff} title="Upload monthly salaries of the staff from Excel" />
     </div>
   );
 }

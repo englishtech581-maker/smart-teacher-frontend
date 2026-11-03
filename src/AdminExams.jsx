@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "./api";
+import UploadBox from "./UploadBox.jsx";
 import ResultsPanel from "./Results.jsx";
 import { MarksEntry, StudentPicker, ReportCardView, ActivitiesPanel } from "./Academics.jsx";
 
@@ -81,6 +82,7 @@ function Activities() {
     <div>
       <StudentPicker onPick={setStudent} />
       {student && <><div className="sta-section-title">{student.name}</div><ActivitiesPanel studentId={student.id} /></>}
+      <UploadBox type="activities" title="Upload co-curricular marks for many students from Excel" />
     </div>
   );
 }
