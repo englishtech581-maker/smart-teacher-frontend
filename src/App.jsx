@@ -5,6 +5,7 @@ import AdminApp from "./AdminApp.jsx";
 import ParentApp from "./ParentApp.jsx";
 import { ForgotForm, ResetForm } from "./ResetPassword.jsx";
 import OwnerPage from "./OwnerPage.jsx";
+import SyncBar from "./SyncBar.jsx";
 
 export default function App() {
   const [user, setUser] = useState(getUser());
@@ -22,6 +23,7 @@ export default function App() {
     <div className="sta">
       <div className={"sta-shell" + (user && user.role === "admin" ? " wide" : "")}>
         {!user && <AuthScreen onAuthed={handleAuthed} />}
+        {user && <SyncBar />}
         {user && user.role === "teacher" && <TeacherApp user={user} onLogout={handleLogout} />}
         {user && user.role === "admin" && <AdminApp user={user} onLogout={handleLogout} />}
         {user && user.role === "parent" && <ParentApp user={user} onLogout={handleLogout} />}

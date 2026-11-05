@@ -1,3 +1,5 @@
+import { cacheRead, cacheWrite, clearCache, queueSpec, enqueue, status, setOffline, isNetworkError, syncQueue, discard, OFFLINE_MESSAGE } from "./offline.js";
+
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export function getToken() {
@@ -15,9 +17,12 @@ export function setSession(token, user) {
   localStorage.setItem("sta_user", JSON.stringify(user));
 }
 export function clearSession() {
+  clearCache(); // saved pages belong to the person who logged in
   localStorage.removeItem("sta_token");
   localStorage.removeItem("sta_user");
 }
+
+const TIMEOUT_MS = 25000;
 
 async function request(path, { method = "GET", body, auth = true } = {}) {
   const headers = { "Content-Type": "application/json" };
@@ -25,15 +30,54 @@ async function request(path, { method = "GET", body, auth = true } = {}) {
     const token = getToken();
     if (token) headers.Authorization = `Bearer ${token}`;
   }
-  const res = await fetch(`${BASE}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const user = getUser();
+  const spec = auth ? queueSpec(path, method, body) : null;
+  // reads that have a saved copy, and attendance / marks saves, give up after a while instead of hanging offline
+  const canFallBack = auth && ((method === "GET" && cacheRead(user, path) !== undefined) || spec);
+  let res;
+  try {
+    const ctl = canFallBack && typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = ctl ? setTimeout(() => ctl.abort(), TIMEOUT_MS) : null;
+    try {
+      res = await fetch(`${BASE}${path}`, { method, headers, body: body ? JSON.stringify(body) : undefined, signal: ctl ? ctl.signal : undefined });
+    } finally { if (timer) clearTimeout(timer); }
+  } catch (err) {
+    if (!isNetworkError(err)) throw err;
+    setOffline(true);
+    if (auth && method === "GET") {
+      const saved = cacheRead(user, path);
+      if (saved !== undefined) return saved;
+    }
+    if (spec) {
+      enqueue(user, path, method, body, spec);
+      if (spec.merge === "attendance") return null;
+      return { saved: (body.marks || []).filter((m) => m.marks !== "" && m.marks != null).length, problems: [], queued: true };
+    }
+    throw new Error(OFFLINE_MESSAGE);
+  }
+  setOffline(false);
   if (res.status === 204) return null;
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  if (auth && method === "GET") cacheWrite(user, path, data);
   return data;
+}
+
+// Sends one waiting change with the current login.
+async function sendQueued(e) {
+  const token = getToken();
+  const res = await fetch(`${BASE}${e.path}`, { method: e.method, headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(e.body) });
+  const data = res.status === 204 ? {} : await res.json().catch(() => ({}));
+  return { status: res.status, error: data.error };
+}
+export function syncNow() { return syncQueue(getUser(), sendQueued); }
+export const syncStatus = () => status(getUser());
+export { discard as discardQueued };
+
+if (typeof window !== "undefined") {
+  window.addEventListener("online", () => { syncNow(); });
+  setInterval(() => { if (getToken() && syncStatus().pending) syncNow(); }, 30000);
+  setTimeout(() => { if (getToken() && syncStatus().pending) syncNow(); }, 1500);
 }
 
 export const api = {

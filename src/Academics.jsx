@@ -58,6 +58,7 @@ export function MarksEntry({ sections, defaultSubject = "", fixedSection = false
     setBusy(true); setMsg({ ok: "", error: "" });
     try {
       const r = await api.saveMarks(examId, { sectionId, subject: subject.trim(), total: Number(total), marks: rows.map((x) => ({ studentId: x.id, marks: vals[x.id] })) });
+      if (r.queued) { setMsg({ ok: "No internet. The marks are saved on this phone and will be sent automatically when you are online.", error: "" }); return; }
       setMsg(r.problems.length ? { ok: "", error: `${r.saved} saved. ${r.problems.length} not saved because the marks are more than ${total} or not a number.` } : { ok: `${r.saved} marks saved.`, error: "" });
     } catch (e) { setMsg({ ok: "", error: e.message }); } finally { setBusy(false); }
   }
