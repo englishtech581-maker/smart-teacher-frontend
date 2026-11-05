@@ -4,9 +4,11 @@ import TeacherApp from "./TeacherApp.jsx";
 import AdminApp from "./AdminApp.jsx";
 import ParentApp from "./ParentApp.jsx";
 import { ForgotForm, ResetForm } from "./ResetPassword.jsx";
+import OwnerPage from "./OwnerPage.jsx";
 
 export default function App() {
   const [user, setUser] = useState(getUser());
+  if (new URLSearchParams(window.location.search).has("owner")) return <div className="sta"><div className="sta-shell wide"><OwnerPage /></div></div>;
 
   function handleAuthed(u) {
     setUser(u);
@@ -32,7 +34,7 @@ export default function App() {
 function AuthScreen({ onAuthed }) {
   const [mode, setMode] = useState("login"); // login | register
   const [role, setRole] = useState("teacher");
-  const [form, setForm] = useState({ name: "", email: "", password: "", schoolName: "", genderType: "", schoolId: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", schoolName: "", genderType: "", schoolId: "", inviteCode: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [justRegisteredAdmin, setJustRegisteredAdmin] = useState(null);
@@ -49,7 +51,7 @@ function AuthScreen({ onAuthed }) {
         result = await api.login({ email: form.email, password: form.password });
       } else {
         const payload = { name: form.name, email: form.email, password: form.password, role };
-        if (role === "admin") { payload.schoolName = form.schoolName; if (form.genderType) payload.genderType = form.genderType; }
+        if (role === "admin") { payload.schoolName = form.schoolName; payload.inviteCode = form.inviteCode; if (form.genderType) payload.genderType = form.genderType; }
         else payload.schoolId = form.schoolId;
         result = await api.register(payload);
       }
@@ -143,6 +145,8 @@ function AuthScreen({ onAuthed }) {
 
         {mode === "register" && role === "admin" && (
           <>
+            <span className="sta-label">Invitation code (given to you by the app owner)</span>
+            <input className="sta-input" value={form.inviteCode} placeholder="e.g. K7QM-3XPA" onChange={(e) => setForm({ ...form, inviteCode: e.target.value })} required />
             <span className="sta-label">School name</span>
             <input className="sta-input" value={form.schoolName} onChange={(e) => setForm({ ...form, schoolName: e.target.value })} required />
             <span className="sta-label">Who studies at your school?</span>
